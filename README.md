@@ -10,17 +10,21 @@ This is a modified version of RustCrypto's x509-ocsp library. Once their version
 ## OCSP Request Building
 
 ```rust
-use der::DecodePem;
+use der::Decode;
 use ocsp_x509::{builder::OcspRequestBuilder, ext::Nonce, Request, Version};
 use sha1::Sha1;
-use std::fs;
+use std::{fs, io::Read};
 use x509_cert::certificate::Certificate;
 
-let issuer = fs::read_to_string("testdata/digicert-ca.pem").expect("error reading file");
-let issuer = Certificate::from_pem(&issuer).expect("error formatting certificate");
+let mut f = fs::File::open("testdata/digicert-ca.der").expect("error opening file");
+let mut data = Vec::new();
+f.read_to_end(&mut data).expect("error reading file");
+let issuer = Certificate::from_der(&data).expect("error formatting certificate");
 
-let cert = fs::read_to_string("testdata/amazon-crt.pem").expect("error reading file");
-let cert = Certificate::from_pem(&cert).expect("error formatting certificate");
+let mut f = fs::File::open("testdata/amazon-crt.der").expect("error opening file");
+let mut data = Vec::new();
+f.read_to_end(&mut data).expect("error reading file");
+let cert = Certificate::from_der(&data).expect("error formatting certificate");
 
 let mut rng = rand::thread_rng();
 
@@ -38,24 +42,21 @@ let req = OcspRequestBuilder::new(Version::V1)
 ## OCSP Responses
 
 ```rust
-use der::{Decode, DecodePem};
+use der::Decode;
 use ocsp_x509::{BasicOcspResponse, CertStatus, OcspResponse, OcspResponseStatus};
 use std::{fs, io::Read};
 use x509_cert::{certificate::Certificate, serial_number::SerialNumber};
 
-let signing_cert = fs::read_to_string("testdata/digicert-ca.pem")
-    .expect("error reading signing certificate");
-let cert = fs::read_to_string("testdata/amazon-crt.pem").expect("error reading file");
-let mut res = Vec::new();
-let mut res_file = fs::File::open("testdata/ocsp-amazon-resp.der")
-    .expect("error opening OCSP response");
-res_file.read_to_end(&mut res).expect("error reading OCSP response");
-
-let signing_cert = Certificate::from_pem(&signing_cert)
-    .expect("error parsing certificate");
-let cert = Certificate::from_pem(&cert).expect("error formatting certificate");
+let mut f = fs::File::open("testdata/amazon-crt.der").expect("error opening file");
+let mut data = Vec::new();
+f.read_to_end(&mut data).expect("error reading file");
+let cert = Certificate::from_der(&data).expect("error formatting certificate");
 let serial = &cert.tbs_certificate.serial_number;
-let res = OcspResponse::from_der(&res).expect("error loading OCSP response");
+
+let mut f = fs::File::open("testdata/ocsp-amazon-resp.der").expect("error opening file");
+let mut data = Vec::new();
+f.read_to_end(&mut data).expect("error reading file");
+let res = OcspResponse::from_der(&data).expect("error loading OCSP response");
 
 match res.response_status {
     OcspResponseStatus::Successful => {
@@ -81,7 +82,7 @@ match res.response_status {
 ## OCSP Response Building
 
 ```rust
-use der::{asn1::GeneralizedTime, Decode, DecodePem};
+use der::{asn1::GeneralizedTime, Decode};
 use ocsp_x509::{
     builder::BasicOcspResponseBuilder, OcspResponse, SingleResponse, ResponderId,
     Version,
@@ -101,23 +102,27 @@ use x509_cert::{
     time::Time,
 };
 
+let mut f = fs::File::open("testdata/rsa2048-sha256-key.der").expect("error opening file");
+let mut data = Vec::new();
+f.read_to_end(&mut data).expect("error reading file");
 let signing_key =
-    fs::read_to_string("testdata/rsa2048-sha256-key.pem").expect("error reading file");
-let signing_key =
-    RsaPrivateKey::from_pkcs8_pem(&signing_key).expect("error formatting signing key");
+    RsaPrivateKey::from_pkcs8_der(&data).expect("error formatting signing key");
 let signing_key = SigningKey::<Sha256>::new_with_prefix(signing_key);
 
-let public_cert =
-    fs::read_to_string("testdata/rsa2048-sha256-crt.pem").expect("error reading file");
-let public_cert = Certificate::from_pem(&public_cert).expect("error formatting signing cert");
+let mut f = fs::File::open("testdata/rsa2048-sha256-crt.der").expect("error opening file");
+let mut data = Vec::new();
+f.read_to_end(&mut data).expect("error reading file");
+let public_cert = Certificate::from_der(&data).expect("error formatting signing cert");
 
-let issuer = fs::read_to_string("testdata/GoodCACert.pem").expect("error reading file");
-let issuer = Certificate::from_pem(&issuer).expect("error formatting issuer");
+let mut f = fs::File::open("testdata/GoodCACert.der").expect("error opening file");
+let mut data = Vec::new();
+f.read_to_end(&mut data).expect("error reading file");
+let issuer = Certificate::from_der(&data).expect("error formatting issuer");
 
-let mut crl = Vec::new();
-let mut crl_file = fs::File::open("testdata/GoodCACRL.crl").expect("error opening CRL");
-crl_file.read_to_end(&mut crl).expect("error reading CRL");
-let crl = CertificateList::from_der(&crl).expect("error formatting CRL");
+let mut f = fs::File::open("testdata/GoodCACRL.crl").expect("error opening file");
+let mut data = Vec::new();
+f.read_to_end(&mut data).expect("error reading file");
+let crl = CertificateList::from_der(&data).expect("error formatting CRL");
 
 // Build response
 let res = OcspResponse::successful(

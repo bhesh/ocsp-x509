@@ -1,7 +1,7 @@
 //! OCSP Testing
 
 use const_oid::db;
-use der::{asn1::GeneralizedTime, Decode, DecodePem, Encode};
+use der::{asn1::GeneralizedTime, Decode, Encode};
 use ocsp_x509::{
     builder::{BasicOcspResponseBuilder, OcspRequestBuilder},
     ext::Nonce,
@@ -14,6 +14,9 @@ use x509_cert::{
     certificate::Certificate, crl::CertificateList, ext::pkix::CrlReason,
     serial_number::SerialNumber, time::Time,
 };
+
+#[cfg(feature = "pem")]
+use der::DecodePem;
 
 use rsa::{pkcs1v15::SigningKey, pkcs8::DecodePrivateKey, RsaPrivateKey};
 
@@ -83,22 +86,27 @@ const NONCE: &[u8] = &[
     0x85, 0xa0,
 ];
 
+fn read_to_vec(filename: &str) -> std::io::Result<Vec<u8>> {
+    let mut f = fs::File::open(filename)?;
+    let mut data = Vec::new();
+    f.read_to_end(&mut data)?;
+    Ok(data)
+}
+
 #[test]
 fn ocsp_request_sanity() {
-    let mut req = fs::File::open("testdata/ocsp-amazon-req.der").expect("error opening file");
-    let mut data = Vec::new();
-    req.read_to_end(&mut data).expect("error reading file");
+    let data = read_to_vec("testdata/ocsp-amazon-req.der").expect("error reading file");
     let req = OcspRequest::from_der(&data).expect("error reading OCSP request");
     assert_eq!(&data, &req.to_der().expect("error encoding request"));
 }
 
 #[test]
 fn ocsp_build_request() {
-    let issuer = fs::read_to_string("testdata/digicert-ca.pem").expect("error reading file");
-    let issuer = Certificate::from_pem(&issuer).expect("error formatting certificate");
+    let data = read_to_vec("testdata/digicert-ca.der").expect("error reading file");
+    let issuer = Certificate::from_der(&data).expect("error formatting certificate");
 
-    let cert = fs::read_to_string("testdata/amazon-crt.pem").expect("error reading file");
-    let cert = Certificate::from_pem(&cert).expect("error formatting certificate");
+    let data = read_to_vec("testdata/amazon-crt.der").expect("error reading file");
+    let cert = Certificate::from_der(&data).expect("error formatting certificate");
 
     let serial_number = &cert.tbs_certificate.serial_number;
     assert_eq!(
@@ -176,23 +184,18 @@ fn ocsp_response_sanity() {
 
 #[test]
 fn ocsp_build_response() {
-    let signing_key =
-        fs::read_to_string("testdata/rsa2048-sha256-key.pem").expect("error reading file");
-    let signing_key =
-        RsaPrivateKey::from_pkcs8_pem(&signing_key).expect("error formatting signing key");
+    let data = read_to_vec("testdata/rsa2048-sha256-key.der").expect("error reading file");
+    let signing_key = RsaPrivateKey::from_pkcs8_der(&data).expect("error formatting signing key");
     let signing_key = SigningKey::<Sha256>::new(signing_key);
 
-    let public_cert =
-        fs::read_to_string("testdata/rsa2048-sha256-crt.pem").expect("error reading file");
-    let public_cert = Certificate::from_pem(&public_cert).expect("error formatting signing cert");
+    let data = read_to_vec("testdata/rsa2048-sha256-crt.der").expect("error reading file");
+    let public_cert = Certificate::from_der(&data).expect("error formatting signing cert");
 
-    let issuer = fs::read_to_string("testdata/GoodCACert.pem").expect("error reading file");
-    let issuer = Certificate::from_pem(&issuer).expect("error formatting issuer");
+    let data = read_to_vec("testdata/GoodCACert.der").expect("error reading file");
+    let issuer = Certificate::from_der(&data).expect("error formatting issuer");
 
-    let mut crl = Vec::new();
-    let mut crl_file = fs::File::open("testdata/GoodCACRL.crl").expect("error opening CRL");
-    crl_file.read_to_end(&mut crl).expect("error reading CRL");
-    let crl = CertificateList::from_der(&crl).expect("error formatting CRL");
+    let data = read_to_vec("testdata/GoodCACRL.crl").expect("error reading file");
+    let crl = CertificateList::from_der(&data).expect("error formatting CRL");
 
     // Build response
     let res = OcspResponse::successful(
