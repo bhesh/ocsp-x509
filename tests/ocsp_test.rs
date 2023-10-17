@@ -15,9 +15,6 @@ use x509_cert::{
     serial_number::SerialNumber, time::Time,
 };
 
-#[cfg(feature = "pem")]
-use der::DecodePem;
-
 use rsa::{pkcs1v15::SigningKey, pkcs8::DecodePrivateKey, RsaPrivateKey};
 
 use sha2::Sha256;
