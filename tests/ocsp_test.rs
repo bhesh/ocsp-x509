@@ -8,16 +8,14 @@ use ocsp_x509::{
     BasicOcspResponse, CertStatus, OcspRequest, OcspResponse, OcspResponseStatus, Request,
     ResponderId, SingleResponse, Version,
 };
+use rsa::{pkcs1v15::SigningKey, pkcs8::DecodePrivateKey, RsaPrivateKey};
 use sha1::Sha1;
+use sha2::Sha256;
 use std::{fs, io::Read, time::Duration};
 use x509_cert::{
     certificate::Certificate, crl::CertificateList, ext::pkix::CrlReason,
     serial_number::SerialNumber, time::Time,
 };
-
-use rsa::{pkcs1v15::SigningKey, pkcs8::DecodePrivateKey, RsaPrivateKey};
-
-use sha2::Sha256;
 
 // OCSP Request Data:
 //     Version: 1 (0x0)
