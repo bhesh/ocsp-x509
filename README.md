@@ -1,11 +1,11 @@
 OCSP-x509
 =========
 
-Parsing and building of OCSP requests and responses.
+Parsing and building of OCSP requests and responses in pure Rust.
 
 This is a modified version of RustCrypto's x509-ocsp library. Once their version is no longer experimental, this crate can be deprecated.
 
-[https://github.com/RustCrypto](https://github.com/RustCrypto)
+[https://github.com/RustCrypto/formats](https://github.com/RustCrypto/formats)
 
 ## OCSP Request Building
 

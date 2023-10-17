@@ -15,16 +15,16 @@ name = "ocsp_x509"
 path = "src/lib.rs"
 
 [dependencies]
-const-oid = { version = "0.9.2", default-features = false, features = ["db"] }
-der = { version = "0.7.3", default-features = false, features = ["alloc", "derive", "flagset", "oid", "pem"] }
+const-oid = { version = "0.9.5", default-features = false, features = ["db"] }
+der = { version = "0.7.8", default-features = false, features = ["alloc", "derive", "flagset", "oid", "pem"] }
 rand_core = { version = "0.6.4", default-features = false }
 signature = { version = "2.1.0", default-features = false, features = ["digest", "rand_core"] }
-spki = { version = "0.7.1", default-features = false, features = ["alloc"] }
-x509-cert = { version = "0.2.1", default-features = false, features = ["pem"] }
+spki = { version = "0.7.2", default-features = false, features = ["alloc"] }
+x509-cert = { version = "0.2.4", default-features = false, features = ["pem"] }
 
 [dev-dependencies]
 rand = { version = "0.8.5" }
-rand_chacha = { version = "0.3" }
-sha1 = { version = "0.10.5", default-features = false, features = ["oid"] }
-sha2 = { version = "0.10.6", default-features = false, features = ["oid"] }
-rsa = { version = "0.9.0-pre.1", default-features = false, features = ["pem", "pkcs5", "sha1", "sha2"] }
+rand_chacha = { version = "0.3.1" }
+sha1 = { version = "0.10.6", default-features = false, features = ["oid"] }
+sha2 = { version = "0.10.8", default-features = false, features = ["oid"] }
+rsa = { version = "0.9.2", default-features = false, features = ["pem", "pkcs5", "sha1", "sha2"] }
