@@ -157,3 +157,11 @@ let res = OcspResponse::successful(
 )
 .expect("error encoding ocsp response");
 ```
+
+## License
+
+Per [RustCrypto](https://github.com/RustCrypto/formats), licensed under:
+
+- [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+- [MIT license](http://opensource.org/licenses/MIT)
+
