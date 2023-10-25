@@ -1,14 +1,18 @@
 [package]
 name = "ocsp-x509"
 version = "0.1.0"
-edition = "2021"
 description = """
-X.509 OCSP
-
-A more complete version of RustCrypto's x509-ocsp implementation. This can be deprecated once their crate is no longer experimental.
-
+A more complete version of RustCrypto's x509-ocsp implementation. This can be yanked once their crate is no longer experimental.
 https://github.com/RustCrypto
 """
+authors = ["Brian Hession"]
+license = "Apache-2.0 OR MIT"
+repository = "https://github.com/bhesh/ocsp-x509/"
+categories = ["cryptography", "data-structures", "encoding", "no-std"]
+keywords = ["crypto", "x509"]
+readme = "README.md"
+edition = "2021"
+rust-version = "1.73"
 
 [lib]
 name = "ocsp_x509"
