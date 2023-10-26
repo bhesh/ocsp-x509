@@ -3,7 +3,8 @@ OCSP-x509
 
 Parsing and building of OCSP requests and responses in pure Rust.
 
-This is a modified version of RustCrypto's x509-ocsp library. Once their version is no longer experimental, this crate can be deprecated.
+This is an experimental, modified version of RustCrypto's x509-ocsp library. It is used as a temporary replacement
+until that crate is released.
 
 [https://github.com/RustCrypto/formats](https://github.com/RustCrypto/formats)
 

@@ -2,7 +2,7 @@
 name = "ocsp-x509"
 version = "0.1.1"
 description = """
-A more complete version of RustCrypto's x509-ocsp implementation. This can be yanked once their crate is no longer experimental.
+An experimental, modified version of RustCrypto's x509-ocsp library. Used as a temporary replacement until that crate is released.
 https://github.com/RustCrypto
 """
 authors = ["Brian Hession"]
