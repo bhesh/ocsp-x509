@@ -1,6 +1,6 @@
 [package]
 name = "ocsp-x509"
-version = "0.1.0"
+version = "0.1.1"
 description = """
 A more complete version of RustCrypto's x509-ocsp implementation. This can be yanked once their crate is no longer experimental.
 https://github.com/RustCrypto

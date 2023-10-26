@@ -121,7 +121,7 @@ pub type KeyHash = OctetString;
 /// SingleResponse structure as defined in [RFC 6960 Section 4.2.1].
 ///
 /// ```text
-// SingleResponse ::= SEQUENCE {
+/// SingleResponse ::= SEQUENCE {
 ///    certID                  CertID,
 ///    certStatus              CertStatus,
 ///    thisUpdate              GeneralizedTime,
@@ -252,7 +252,7 @@ pub enum CertStatus {
 /// RevokedInfo structure as defined in [RFC 6960 Section 4.2.1].
 ///
 /// ```text
-// RevokedInfo ::= SEQUENCE {
+/// RevokedInfo ::= SEQUENCE {
 ///    revocationTime          GeneralizedTime,
 ///    revocationReason        [0] EXPLICIT CRLReason OPTIONAL }
 /// ```

@@ -28,22 +28,17 @@ pub struct Nonce {
 }
 
 impl Nonce {
-    pub fn new(nonce: &[u8]) -> Self {
+    pub fn new(nonce: impl Into<Vec<u8>>) -> Self {
         Self {
-            bytes: Vec::from(nonce),
+            bytes: nonce.into(),
         }
     }
 
     /// Creates a new Nonce object given a random generator and a length
     pub fn generate<R: CryptoRngCore>(rng: &mut R, length: usize) -> Self {
-        let mut bytes = Vec::with_capacity(length);
-        let mut random = [0u8; 32];
-        while bytes.len() < length {
-            rng.fill_bytes(&mut random);
-            bytes.extend_from_slice(&random);
-        }
-        bytes.resize(length, 0);
-        Self { bytes }
+        let mut bytes = alloc::vec![0; length];
+        rng.fill_bytes(&mut bytes);
+        Self::new(bytes)
     }
 }
 
@@ -95,7 +90,7 @@ pub struct CrlId {
 /// AcceptableResponses structure as defined in [RFC 6960 Section 4.4.3].
 ///
 /// ```text
-// AcceptableResponses ::= SEQUENCE OF OBJECT IDENTIFIER
+/// AcceptableResponses ::= SEQUENCE OF OBJECT IDENTIFIER
 /// ```
 ///
 /// [RFC 6960 Section 4.4.3]: https://datatracker.ietf.org/doc/html/rfc6960#section-4.4.3
@@ -105,7 +100,7 @@ impl AsExtension for AcceptableResponses {
     fn to_extension(&self) -> Result<Extension, der::Error> {
         Ok(Extension {
             extn_id: ID_PKIX_OCSP_RESPONSE,
-            critical: false,
+            critical: true,
             extn_value: OctetString::new(self.to_der()?)?,
         })
     }
@@ -114,7 +109,7 @@ impl AsExtension for AcceptableResponses {
 /// ArchiveCutoff structure as defined in [RFC 6960 Section 4.4.4].
 ///
 /// ```text
-// ArchiveCutoff ::= GeneralizedTime
+/// ArchiveCutoff ::= GeneralizedTime
 /// ```
 ///
 /// [RFC 6960 Section 4.4.4]: https://datatracker.ietf.org/doc/html/rfc6960#section-4.4.4
