@@ -209,7 +209,7 @@ impl CertId {
                 parameters: Some(Null.into()),
             },
             issuer_name_hash: OctetString::new(
-                D::digest(&issuer.tbs_certificate.subject.to_der()?).to_vec(),
+                D::digest(issuer.tbs_certificate.subject.to_der()?).to_vec(),
             )?,
             issuer_key_hash: OctetString::new(
                 D::digest(
@@ -266,12 +266,12 @@ pub struct RevokedInfo {
     pub revocation_reason: Option<CrlReason>,
 }
 
-impl From<RevokedCert> for RevokedInfo {
-    fn from(rc: RevokedCert) -> Self {
+impl From<&RevokedCert> for RevokedInfo {
+    fn from(rc: &RevokedCert) -> Self {
         Self {
             revocation_time: match rc.revocation_date {
                 Time::UtcTime(t) => GeneralizedTime::from_date_time(t.to_date_time()),
-                Time::GeneralTime(t) => t.clone(),
+                Time::GeneralTime(t) => t,
             },
             revocation_reason: if let Some(extensions) = &rc.crl_entry_extensions {
                 let mut filter = extensions
@@ -291,28 +291,9 @@ impl From<RevokedCert> for RevokedInfo {
     }
 }
 
-impl From<&RevokedCert> for RevokedInfo {
-    fn from(rc: &RevokedCert) -> Self {
-        Self {
-            revocation_time: match rc.revocation_date {
-                Time::UtcTime(t) => GeneralizedTime::from_date_time(t.to_date_time()),
-                Time::GeneralTime(t) => t.clone(),
-            },
-            revocation_reason: if let Some(extensions) = &rc.crl_entry_extensions {
-                let mut filter = extensions
-                    .iter()
-                    .filter(|ext| ext.extn_id == CrlReason::OID);
-                match filter.next() {
-                    None => None,
-                    Some(ext) => match CrlReason::from_der(ext.extn_value.as_bytes()) {
-                        Ok(reason) => Some(reason),
-                        Err(_) => None,
-                    },
-                }
-            } else {
-                None
-            },
-        }
+impl From<RevokedCert> for RevokedInfo {
+    fn from(rc: RevokedCert) -> Self {
+        Self::from(&rc)
     }
 }
 
